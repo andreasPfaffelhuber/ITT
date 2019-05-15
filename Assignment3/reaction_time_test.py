@@ -20,6 +20,16 @@ COLOR_GREEN = "#008000"
 COLOR_BLACK = "#000000"
 
 
+# Implemented by Andreas Pfaffelhuber and Daniel Schmaderer
+# Distribution of Workload:
+
+# The first part of the code with the program flow was implemented together, the logging and the reading of the input
+# file were implemented individually, which is documented in the comments above.
+
+# Answers for task 3.1 were searched by each member individually, and then concatenated together to a single answer
+
+# The planning of the experiment was done together, as well as the writing of the final report
+
 class ReactionTimer(QtWidgets.QWidget):
 
     """
@@ -163,6 +173,7 @@ class ReactionTimer(QtWidgets.QWidget):
         qp.setPen(QtGui.QColor(COLOR_BLACK))
 
     # Logs the tiral to csv
+    # Logging implemented by Daniel Schmaderer
     def logTrialToCSV(self, event):
         # Sets Attentive/Pre-Attentive and Distraction/No Distraction based on the trial
         if self.trials[self.trial_count] == ATTENTIVE_DISTRACTION or \
@@ -198,24 +209,28 @@ class ReactionTimer(QtWidgets.QWidget):
 
 def main():
     # Reads given file from commandline parameter and extracts the given information
-    filepath = sys.argv[1]
-    participant = ""
-    trials = ""
-    time_between_signals_ms = 0
-    f = open(filepath)
-    contents = f.read()
-    file_as_list = contents.splitlines()
-    for line in file_as_list:
-        line = line.split(": ")
-        if line[0] == "PARTICIPANT":
-            participant = line[1]
-        if line[0] == "TRIALS":
-            trials = line[1]
-        if line[0] == "TIME_BETWEEN_SIGNALS_MS":
-            time_between_signals_ms = int(line[1])
-    app = QtWidgets.QApplication(sys.argv)
-    react = ReactionTimer(participant, trials, time_between_signals_ms)
-    sys.exit(app.exec_())
+    # Reading input file implemented by Andreas Pfaffelhuber
+    try:
+        filepath = sys.argv[1]
+        participant = ""
+        trials = ""
+        time_between_signals_ms = 0
+        f = open(filepath)
+        contents = f.read()
+        file_as_list = contents.splitlines()
+        for line in file_as_list:
+            line = line.split(": ")
+            if line[0] == "PARTICIPANT":
+                participant = line[1]
+            if line[0] == "TRIALS":
+                trials = line[1]
+            if line[0] == "TIME_BETWEEN_SIGNALS_MS":
+                time_between_signals_ms = int(line[1])
+        app = QtWidgets.QApplication(sys.argv)
+        react = ReactionTimer(participant, trials, time_between_signals_ms)
+        sys.exit(app.exec_())
+    except Exception:
+        print("An error occured while processing the input. Please specify an input file with the correct format.")
 
 
 if __name__ == '__main__':
