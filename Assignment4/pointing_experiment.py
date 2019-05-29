@@ -55,8 +55,9 @@ class FittsLawModel(object):
         self.distances = distances
         self.current_trial = -1
         self.trials = trials
+        self.errors = 0
         print("timestamp (ISO); user_id; trial; target_distance; target_size; movement_time (ms);"
-              " start_pos_x; start_pos_y; end_pos_x; end_pos_y; click_offset_x; click_offset_y; was_error; trial_name")
+              " start_pos_x; start_pos_y; end_pos_x; end_pos_y; click_offset_x; click_offset_y; errors; trial_name")
 
     def get_current_trial(self):
         return self.current_trial
@@ -71,20 +72,24 @@ class FittsLawModel(object):
         if self.current_trial < len(self.sizes)-1:
             self.current_trial += 1
             self.timer.start()
+            self.errors = 0
         else:
             sys.stderr.write("There are no targets left.")
             sys.exit(1)
 
+    def add_error(self):
+        self.errors += 1
+
     # Logging-function, prints logs to stdout in csv-format
-    def log_mousepress(self, start_pos, end_pos, click_offset, error):
+    def log_mousepress(self, start_pos, end_pos, click_offset):
         size, distance = self.get_current_trial_parameters()
         time_elapsed = self.timer.elapsed()
         trial = self.trials[self.current_trial]
-        print("%s; %s; %d; %d; %d; %d; %d; %d; %d; %d; %d; %d; %s; %s" % (self.timestamp(), self.user_id,
+        print("%s; %s; %d; %d; %d; %d; %d; %d; %d; %d; %d; %d; %d; %s" % (self.timestamp(), self.user_id,
                                                                           self.current_trial, distance, size,
                                                                           time_elapsed, start_pos[0], start_pos[1],
                                                                           end_pos[0], end_pos[1], click_offset[0],
-                                                                          click_offset[1], error, trial))
+                                                                          click_offset[1], self.errors, trial))
 
     # creates a timestamp in the ISO-format
     def timestamp(self):
@@ -120,9 +125,11 @@ class FittsLawTest(QtWidgets.QWidget):
             current_position = (ev.x(), ev.y())
             click_offset = (self.target.get_position()[0] - current_position[0],
                             self.target.get_position()[1] - current_position[1])
-            self.model.log_mousepress(self.start_pos, current_position, click_offset, not clicked_correct_target)
             if clicked_correct_target:
+                self.model.log_mousepress(self.start_pos, current_position, click_offset)
                 self.endedTrial(ev)
+            else:
+                self.model.add_error()
         elif ev.button() == QtCore.Qt.LeftButton and self.model.get_current_trial() == -1:
                 self.endedTrial(ev)
 

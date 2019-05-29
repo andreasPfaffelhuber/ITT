@@ -44,22 +44,23 @@ class PointingTechniqueFittsLawModel(FittsLawModel):
             self.pointing_techniques = pointing_techniques
             self.current_trial = -1
             self.trials = trials
+            self.errors = 0
             print("timestamp (ISO); user_id; trial; target_distance; target_size; movement_time (ms);"
-                  " start_pos_x; start_pos_y; end_pos_x; end_pos_y; click_offset_x; click_offset_y; was_error; "
+                  " start_pos_x; start_pos_y; end_pos_x; end_pos_y; click_offset_x; click_offset_y; errors; "
                   "pointing_technique; trial_name")
 
         # Logging-function, prints logs to stdout in csv-format
-        def log_mousepress(self, start_pos, end_pos, click_offset, error):
+        def log_mousepress(self, start_pos, end_pos, click_offset):
             size, distance = self.get_current_trial_parameters()
             technique = self.get_current_trial_technique()
             time_elapsed = self.timer.elapsed()
             trial = self.trials[self.current_trial]
-            print("%s; %s; %d; %d; %d; %d; %d; %d; %d; %d; %d; %d; %s; %s; %s" % (self.timestamp(), self.user_id,
+            print("%s; %s; %d; %d; %d; %d; %d; %d; %d; %d; %d; %d; %d; %s; %s" % (self.timestamp(), self.user_id,
                                                                                   self.current_trial, distance, size,
                                                                                   time_elapsed, start_pos[0],
                                                                                   start_pos[1], end_pos[0],
                                                                                   end_pos[1], click_offset[0],
-                                                                                  click_offset[1], error,
+                                                                                  click_offset[1], self.errors,
                                                                                   technique, trial))
 
         def get_current_trial_technique(self):
@@ -87,9 +88,11 @@ class PointingTechniqueFittsLawTest(FittsLawTest):
             current_position = (x, y)
             click_offset = (self.target.get_position()[0] - current_position[0],
                             self.target.get_position()[1] - current_position[1])
-            self.model.log_mousepress(self.start_pos, current_position, click_offset, not clicked_correct_target)
             if clicked_correct_target:
+                self.model.log_mousepress(self.start_pos, current_position, click_offset)
                 self.endedTrial(ev)
+            else:
+                self.model.add_error()
         elif ev.button() == QtCore.Qt.LeftButton and self.model.get_current_trial() == -1:
             self.endedTrial(ev)
 
