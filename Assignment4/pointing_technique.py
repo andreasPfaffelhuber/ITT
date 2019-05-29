@@ -46,7 +46,7 @@ class PointingTechniqueFittsLawModel(FittsLawModel):
             self.trials = trials
             print("timestamp (ISO); user_id; trial; target_distance; target_size; movement_time (ms);"
                   " start_pos_x; start_pos_y; end_pos_x; end_pos_y; click_offset_x; click_offset_y; was_error; "
-                  "pointing_technique")
+                  "pointing_technique; trial_name")
 
         # Logging-function, prints logs to stdout in csv-format
         def log_mousepress(self, start_pos, end_pos, click_offset, error):

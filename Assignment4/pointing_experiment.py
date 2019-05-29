@@ -56,7 +56,7 @@ class FittsLawModel(object):
         self.current_trial = -1
         self.trials = trials
         print("timestamp (ISO); user_id; trial; target_distance; target_size; movement_time (ms);"
-              " start_pos_x; start_pos_y; end_pos_x; end_pos_y; click_offset_x; click_offset_y; was_error")
+              " start_pos_x; start_pos_y; end_pos_x; end_pos_y; click_offset_x; click_offset_y; was_error; trial_name")
 
     def get_current_trial(self):
         return self.current_trial
