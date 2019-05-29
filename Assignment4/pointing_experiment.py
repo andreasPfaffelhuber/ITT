@@ -2,15 +2,12 @@ import sys
 import random
 import math
 from PyQt5 import QtGui, QtWidgets, QtCore
-from pointing_technique import PointerExtrapolation
 
 
-
+USERID = 1
 SIZES = [30, 30, 30, 40, 10, 10, 10, 10]
 DISTANCES = [100, 100, 100, 100, 300, 300, 50, 50]
-
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 400
+POINTING_TECHNIQUE = [True, False, True, True, True, True, True, False]
 
 
 class Circle(object):
@@ -39,7 +36,7 @@ class Circle(object):
         else:
             return False
 
-#TODO pointer click richtig setzen
+
 class FittsLawModel(object):
     def __init__(self, user_id, sizes, distances):
         self.timer = QtCore.QTime()
@@ -81,21 +78,21 @@ class FittsLawModel(object):
 
 
 class FittsLawTest(QtWidgets.QWidget):
-    def __init__(self, model, has_pointing_extrapolation):
+    def __init__(self, model):
         super(FittsLawTest, self).__init__()
         self.model = model
-        self.start_pos = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+        self.screen_height = 400
+        self.screen_width = 800
+        self.start_pos = (self.screen_width/2, self.screen_height/2)
         self.initUI()
-        self.has_pointing_extrapolation = has_pointing_extrapolation
         self.target = None
         self.other_circles = None
-        self.pointer_extrapolation = None
-        self.highlighted_circle = None
+
 
     def initUI(self):
         self.text = "Press the left mouse button to start the experiment"
-        self.setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.setWindowTitle('FittsLawTest')
+        self.setGeometry(0, 0, self.screen_width, self.screen_height)
+        self.setWindowTitle('Fitts Law Test')
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         QtGui.QCursor.setPos(self.mapToGlobal(QtCore.QPoint(self.start_pos[0], self.start_pos[1])))
         self.setMouseTracking(True)
@@ -109,28 +106,9 @@ class FittsLawTest(QtWidgets.QWidget):
                             self.target.get_position()[1] - current_position[1])
             self.model.log_mousepress(self.start_pos, current_position, click_offset, not clicked_correct_target)
             if clicked_correct_target:
-                self.model.start_next_trial()
-                self.start_pos = (ev.x(), ev.y())
-                self.setCircles(ev)
-                if self.has_pointing_extrapolation:
-                    self.pointer_extrapolation = PointerExtrapolation([self.target] +self.other_circles, 0.2)
-                    self.highlighted_circle = self.pointer_extrapolation.filter(ev)
-                self.update()
-
+                self.endedTrial(ev)
         elif ev.button() == QtCore.Qt.LeftButton and self.model.get_current_trial() == -1:
-                self.model.start_next_trial()
-                self.start_pos = (ev.x(), ev.y())
-                self.setCircles(ev)
-                self.update()
-                if self.has_pointing_extrapolation:
-                    self.pointer_extrapolation = PointerExtrapolation([self.target] + self.other_circles, 0.2)
-                    self.highlighted_circle = self.pointer_extrapolation.filter(ev)
-                self.update()
-
-    def mouseMoveEvent(self, ev):
-        if self.pointer_extrapolation:
-            self.highlighted_circle = self.pointer_extrapolation.filter(ev)
-            self.update()
+                self.endedTrial(ev)
 
     def paintEvent(self, event):
         qp = QtGui.QPainter()
@@ -139,12 +117,13 @@ class FittsLawTest(QtWidgets.QWidget):
             self.drawCircles(event, qp)
         else:
             self.displayInstructions(event, qp)
-        if self.highlighted_circle:
-            x, y = self.highlighted_circle.get_position()
-            size = self.highlighted_circle.get_radius()
-            qp.setBrush(QtGui.QColor(100, 34, 100))
-            qp.drawEllipse(x-size/2, y-size/2, size, size)
         qp.end()
+
+    def endedTrial(self, event):
+        self.model.start_next_trial()
+        self.start_pos = (event.x(), event.y())
+        self.setCircles(event)
+        self.update()
 
     def displayInstructions(self, event, qp):
         qp.setPen(QtGui.QColor(0, 0, 0))
@@ -163,7 +142,7 @@ class FittsLawTest(QtWidgets.QWidget):
             x = self.start_pos[0] + x_change
             y = self.start_pos[1] + y_change
 
-            if x > 0 + size and x < SCREEN_WIDTH - size and y > 0 + size and y < SCREEN_HEIGHT - size:
+            if x > 0 + size and x < self.screen_width - size and y > 0 + size and y < self.screen_height - size:
                 found_new_target_pos = True
         return (x, y)
 
@@ -180,8 +159,8 @@ class FittsLawTest(QtWidgets.QWidget):
     def setOtherCircles(self, event, disance, size):
         self.other_circles = []
         for i in range(0, 10):
-            x = random.randrange(0 + int(size/2+1), SCREEN_WIDTH - int(size/2+1), 1)
-            y = random.randrange(0 + int(size/2+1), SCREEN_HEIGHT - int(size/2+1), 1)
+            x = random.randrange(0 + int(size/2+1), self.screen_width - int(size/2+1), 1)
+            y = random.randrange(0 + int(size/2+1), self.screen_height - int(size/2+1), 1)
             circle = Circle(x, y, size)
             intersectsOtherCircles = False
             for otherCircle in self.other_circles:
@@ -211,7 +190,7 @@ class FittsLawTest(QtWidgets.QWidget):
 def main():
     app = QtWidgets.QApplication(sys.argv)
     model = FittsLawModel(1, SIZES, DISTANCES)
-    fitts_law_test = FittsLawTest(model, True)
+    fitts_law_test = FittsLawTest(model)
     sys.exit(app.exec_())
 
 
