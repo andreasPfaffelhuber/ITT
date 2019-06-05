@@ -1,0 +1,1 @@
+Ttest_relResult(statistic=3.1640375620209156, pvalue=0.005109578048749876)
