@@ -54,7 +54,7 @@ class TextEdit(QtWidgets.QLineEdit):
                              "swimming", "frog", "jumped", "landed", "in", "pond", "Can", "I", "have", "some",
                              "juice", "drink", "pizza", "smells", "delicious", "there", "is", "a", "fly",
                              "car", "with", "us", "look", "on", "top", "of", "refrigerator", "for", "key",
-                             "am", "out", "paper", "printer", "will", "you", "help", "me", "math" "homework",
+                             "am", "out", "paper", "printer", "will", "you", "help", "me", "math", "homework",
                              "music", "too", "loud", "my", "ears"])
 
     def __init__(self, parent=None):
