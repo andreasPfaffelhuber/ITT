@@ -7,13 +7,17 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 # Workload Distribution:
 # The basics of the TextInput class were implemented together. The reading of the test configuration and the change of
-# the input and the logging were implemented by Daniel Schmaderer.  The classes Completer and TextEdit were basicly
-# used from the source: https://stackoverflow.com/questions/35628257/pyqt-auto-completer-with-qlineedit-multiple-times
+# the input and the logging were implemented by Daniel Schmaderer.  The classes Completer and TextEdit in
+# text_input_technique.py were basicly used from the source:
+# https://stackoverflow.com/questions/35628257/pyqt-auto-completer-with-qlineedit-multiple-times
 # and finished by Andreas Pfaffelhuber.
+# The extended TextInputComparison for 6.3 was implemented by both members together.
+
 # Sentences:
 # http://www.softschools.com/examples/grammar/simple_sentence_examples/445/
 
 
+# Implemented by both members
 class TextInput(QtWidgets.QTextEdit):
 
     def __init__(self, user_id, sentences, sentences_number, trail_name):
@@ -102,6 +106,8 @@ class TextInput(QtWidgets.QTextEdit):
         self.text_input.setFocus()
 
 
+# Implemented by Daniel Schmaderer
+# Main loop to show the application and read the input files
 def main():
     try:
         app = QtWidgets.QApplication(sys.argv)
