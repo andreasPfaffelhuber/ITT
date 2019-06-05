@@ -6,6 +6,7 @@ import sys
 from PyQt5.QtWidgets import QCompleter, QLineEdit, QApplication
 from PyQt5.QtCore import QStringListModel, Qt
 from PyQt5 import QtGui, QtCore, QtWidgets
+from text_entry_speed_test import TextInput
 
 # https://stackoverflow.com/questions/35628257/pyqt-auto-completer-with-qlineedit-multiple-times
 
