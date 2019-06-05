@@ -33,6 +33,7 @@ class TextInput(QtWidgets.QTextEdit):
         self.text_input.editingFinished.connect(self.sentence_finished)
         print("event; timestamp (ISO); user_id; sentence_number; time (ms); trail_name")
 
+    # Prints out the logs for key, word and sentence
     def logging(self, event, time):
         print("%s; %s; %s; %s; %d; %s" % (event,
                                           self.timestamp(),
@@ -41,6 +42,7 @@ class TextInput(QtWidgets.QTextEdit):
                                           time,
                                           self.trail_name[self.sentence_counter]))
 
+    # Prints out the log for the finished test
     def logging_test_finished(self, event, time):
         finished = "finished"
         print("%s; %s; %s; %s; %d; %s" % (event, self.timestamp(),
@@ -49,7 +51,7 @@ class TextInput(QtWidgets.QTextEdit):
                                           time,
                                           finished))
 
-    # Loggs the input changes for the QLineEdit and starts the timers
+    # Calls the logger for the input changes of the QLineEdit and starts the timers
     def input_change(self, text):
         # self.timerLastKey.start()
         if len(text) <= 1:
